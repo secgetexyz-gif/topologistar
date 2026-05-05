@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Topologi Star — Raditya Andika Paksi</title>
+  <meta name="description" content="Website edukasi tentang Topologi Star dalam jaringan komputer. Disusun oleh Raditya Andika Paksi." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ============================================================
+       CSS VARIABLES & RESET
+    ============================================================ */
+    :root {
+      --navy:        #0D1B2A;
+      --navy-mid:    #1A2E45;
+      --blue:        #1B6CA8;
+      --blue-light:  #2D8CDB;
+      --accent:      #4EAFF0;
+      --white:       #FFFFFF;
+      --off-white:   #F7F9FC;
+      --gray-100:    #EEF2F7;
+      --gray-200:    #D9E2EE;
+      --gray-400:    #8A9ABB;
+      --gray-600:    #4A5568;
+      --gray-800:    #1E293B;
+      --radius-sm:   8px;
+      --radius-md:   14px;
+      --radius-lg:   22px;
+      --shadow-sm:   0 2px 12px rgba(13,27,42,.07);
+      --shadow-md:   0 6px 30px rgba(13,27,42,.11);
+      --shadow-lg:   0 16px 60px rgba(13,27,42,.15);
+      --transition:  0.28s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      color: var(--gray-800);
+      background: var(--off-white);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ============================================================
+       TYPOGRAPHY
+    ============================================================ */
+    h1, h2, h3 { font-family: 'Playfair Display', serif; line-height: 1.2; }
+
+    h1 { font-size: clamp(2rem, 5vw, 3.4rem); color: var(--white); }
+    h2 { font-size: clamp(1.5rem, 3.5vw, 2.2rem); color: var(--navy); }
+    h3 { font-size: clamp(1rem, 2.5vw, 1.25rem); color: var(--navy); }
+
+    p { color: var(--gray-600); font-size: 1rem; }
+
+    /* ============================================================
+       LAYOUT HELPERS
+    ============================================================ */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    .section    { padding: 80px 0; }
+    .section--alt { background: var(--white); }
+
+    /* ============================================================
+       HEADER / HERO
+    ============================================================ */
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 55%, #1f3f6a 100%);
+      padding: 72px 0 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 80% 40%, rgba(78,175,240,.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    /* geometric dots */
+    header::after {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 380px; height: 380px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.06);
+      pointer-events: none;
+    }
+
+    .header-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(78,175,240,.15);
+      border: 1px solid rgba(78,175,240,.3);
+      color: var(--accent);
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 999px;
+    }
+    .badge svg { width: 14px; height: 14px; }
+
+    .header-subtitle {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,.65);
+      max-width: 520px;
+      font-weight: 300;
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue-light), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem;
+      font-weight: 700;
+      color: var(--white);
+      flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,.25);
+    }
+    .header-author {
+      color: rgba(255,255,255,.8);
+      font-size: .88rem;
+    }
+    .header-author strong { color: var(--white); font-weight: 600; }
+
+    /* ============================================================
+       NAV / TOC
+    ============================================================ */
+    nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 24px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .nav-inner::-webkit-scrollbar { display: none; }
+
+    .nav-inner a {
+      display: inline-block;
+      padding: 14px 14px;
+      font-size: .82rem;
+      font-weight: 500;
+      color: var(--gray-600);
+      text-decoration: none;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: color var(--transition), border-color var(--transition);
+    }
+    .nav-inner a:hover {
+      color: var(--blue);
+      border-bottom-color: var(--blue-light);
+    }
+
+    /* ============================================================
+       SECTION LABEL
+    ============================================================ */
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 12px;
+    }
+    .section-label::before {
+      content: '';
+      width: 22px; height: 2px;
+      background: var(--blue-light);
+      border-radius: 2px;
+    }
+
+    .section-title { margin-bottom: 10px; }
+    .section-intro { color: var(--gray-600); max-width: 680px; margin-bottom: 48px; font-size: 1.02rem; }
+
+    /* ============================================================
+       CARDS
+    ============================================================ */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      padding: 28px 24px;
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(29,108,168,.25);
+    }
+
+    .card-icon {
+      width: 44px; height: 44px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, #e8f3fd, #c8e4f8);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 16px;
+    }
+    .card-icon svg { width: 22px; height: 22px; color: var(--blue); }
+
+    .card h3 { margin-bottom: 8px; font-size: 1.08rem; }
+    .card p  { font-size: .94rem; line-height: 1.65; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+    /* ============================================================
+       HIGHLIGHT BOX
+    ============================================================ */
+    .highlight-box {
+      background: linear-gradient(135deg, #EBF5FF 0%, #F0F7FF 100%);
+      border-left: 4px solid var(--blue-light);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      padding: 24px 28px;
+      margin: 32px 0;
+    }
+    .highlight-box p { color: var(--gray-800); font-size: 1rem; }
+
+    /* ============================================================
+       DIAGRAM — STAR TOPOLOGY
+    ============================================================ */
+    .diagram-wrap {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 40px 24px;
+      box-shadow: var(--shadow-md);
+      text-align: center;
+    }
+    .diagram-title {
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      margin-bottom: 8px;
+    }
+    .diagram-caption {
+      font-size: .88rem;
+      color: var(--gray-400);
+      margin-top: 16px;
+    }
+
+    /* SVG diagram styles */
+    .star-svg { width: 100%; max-width: 480px; height: auto; }
+    .node-hub  { fill: var(--blue); }
+    .node-pc   { fill: var(--navy-mid); }
+    .line-conn { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 6,3; opacity: .7; }
+    .line-conn.active { stroke: var(--blue); stroke-width: 2.5; stroke-dasharray: none; opacity: 1; }
+    .label     { font-family: 'DM Sans', sans-serif; font-size: 11px; fill: var(--gray-600); font-weight: 500; }
+    .label-hub { font-family: 'DM Sans', sans-serif; font-size: 12px; fill: var(--white); font-weight: 600; }
+
+    /* pulse ring on hub */
+    @keyframes pulse-ring {
+      0%   { r: 26; opacity: .5; }
+      100% { r: 38; opacity: 0; }
+    }
+    .pulse { animation: pulse-ring 2s ease-out infinite; fill: none; stroke: var(--accent); stroke-width: 1.5; }
+
+    /* data packet animation */
+    @keyframes travel { from { offset-distance: 0% } to { offset-distance: 100% } }
+    .packet {
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: absolute;
+      box-shadow: 0 0 6px var(--accent);
+    }
+
+    /* ============================================================
+       PRO / CON LISTS
+    ============================================================ */
+    .pro-con-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .pro-con-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: .96rem;
+      color: var(--gray-600);
+      line-height: 1.6;
+    }
+    .icon-pro, .icon-con {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .icon-pro { background: #D1FAE5; color: #059669; }
+    .icon-con { background: #FEE2E2; color: #DC2626; }
+    .icon-pro svg, .icon-con svg { width: 12px; height: 12px; }
+
+    /* ============================================================
+       TABLE — DEVICES
+    ============================================================ */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-sm);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--white);
+      font-size: .94rem;
+    }
+    thead { background: var(--navy); }
+    thead th {
+      text-align: left;
+      padding: 14px 20px;
+      color: var(--white);
+      font-weight: 600;
+      font-size: .84rem;
+      letter-spacing: .04em;
+    }
+    tbody tr { transition: background var(--transition); }
+    tbody tr:hover { background: var(--gray-100); }
+    tbody tr:not(:last-child) { border-bottom: 1px solid var(--gray-200); }
+    tbody td { padding: 14px 20px; color: var(--gray-600); vertical-align: top; }
+    tbody td:first-child { font-weight: 500; color: var(--navy); }
+
+    /* ============================================================
+       STEPS — HOW IT WORKS
+    ============================================================ */
+    .steps { display: flex; flex-direction: column; gap: 0; }
+    .step {
+      display: flex;
+      gap: 24px;
+      position: relative;
+      padding-bottom: 32px;
+    }
+    .step:last-child { padding-bottom: 0; }
+    .step-left { display: flex; flex-direction: column; align-items: center; }
+    .step-num {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: var(--white);
+      font-weight: 700;
+      font-size: .9rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .step-line {
+      width: 2px;
+      flex: 1;
+      background: var(--gray-200);
+      margin: 8px 0 0;
+    }
+    .step:last-child .step-line { display: none; }
+    .step-body { padding-top: 8px; }
+    .step-body h3 { margin-bottom: 6px; font-size: 1.05rem; }
+
+    /* ============================================================
+       CHARACTERISTICS PILLS
+    ============================================================ */
+    .pills { display: flex; flex-wrap: wrap; gap: 10px; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: .88rem;
+      font-weight: 500;
+      color: var(--navy);
+      box-shadow: var(--shadow-sm);
+      transition: background var(--transition), border-color var(--transition), transform var(--transition);
+    }
+    .pill:hover {
+      background: linear-gradient(135deg, #e8f3fd, #dbeffe);
+      border-color: var(--blue-light);
+      transform: scale(1.03);
+    }
+    .pill-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--blue-light);
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+       BENEFIT CARDS (colored)
+    ============================================================ */
+    .benefit-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .benefit-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .benefit-icon {
+      font-size: 1.6rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .benefit-card h3 { font-size: 1rem; margin-bottom: 6px; }
+
+    /* ============================================================
+       CONCLUSION
+    ============================================================ */
+    .conclusion {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+      border-radius: var(--radius-lg);
+      padding: 48px 40px;
+      color: var(--white);
+      position: relative;
+      overflow: hidden;
+    }
+    .conclusion::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.07);
+      pointer-events: none;
+    }
+    .conclusion h2 { color: var(--white); margin-bottom: 16px; }
+    .conclusion p  { color: rgba(255,255,255,.75); max-width: 680px; font-size: 1rem; }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      background: var(--navy);
+      padding: 40px 0;
+    }
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-brand { color: var(--white); font-weight: 600; font-size: .95rem; }
+    .footer-brand span { color: var(--accent); }
+    .footer-copy { color: var(--gray-400); font-size: .82rem; text-align: right; }
+
+    /* ============================================================
+       SCROLL REVEAL ANIMATION
+    ============================================================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .55s ease, transform .55s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .section { padding: 56px 0; }
+      header { padding: 52px 0 60px; }
+      .conclusion { padding: 36px 24px; }
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+      .footer-copy { text-align: left; }
+    }
+    @media (max-width: 480px) {
+      h1 { font-size: 1.75rem; }
+      .nav-inner a { padding: 12px 10px; font-size: .78rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       HEADER / HERO
+  ============================================================ -->
+  <header>
+    <div class="container">
+      <div class="header-inner">
+        <div class="badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="3" r="2"/><circle cx="21" cy="12" r="2"/><circle cx="12" cy="21" r="2"/><circle cx="3" cy="12" r="2"/><line x1="12" y1="5" x2="12" y2="9"/><line x1="19" y1="12" x2="15" y2="12"/><line x1="12" y1="15" x2="12" y2="19"/><line x1="5" y1="12" x2="9" y2="12"/></svg>
+          Materi Jaringan Komputer
+        </div>
+        <h1>Topologi Star</h1>
+        <p class="header-subtitle">Memahami konsep, cara kerja, karakteristik, kelebihan dan kekurangan Topologi Star dalam jaringan komputer secara menyeluruh.</p>
+        <div class="header-meta">
+          <div class="avatar">RA</div>
+          <div class="header-author">
+            Disusun oleh <strong>Raditya Andika Paksi</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       NAVIGATION
+  ============================================================ -->
+  <nav aria-label="Navigasi halaman">
+    <div class="nav-inner">
+      <a href="#pengertian-topologi">Topologi Jaringan</a>
+      <a href="#pengertian-star">Topologi Star</a>
+      <a href="#cara-kerja">Cara Kerja</a>
+      <a href="#karakteristik">Karakteristik</a>
+      <a href="#kelebihan">Kelebihan</a>
+      <a href="#kekurangan">Kekurangan</a>
+      <a href="#perangkat">Perangkat</a>
+      <a href="#manfaat">Manfaat</a>
+      <a href="#kesimpulan">Kesimpulan</a>
+    </div>
+  </nav>
+
+  <!-- ============================================================
+       01. TOPOLOGI JARINGAN KOMPUTER
+  ============================================================ -->
+  <section id="pengertian-topologi" class="section section--alt">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-label">01 — Dasar</div>
+        <h2 class="section-title">Topologi Jaringan Komputer</h2>
+        <p class="section-intro">Sebelum memahami Topologi Star, penting untuk mengerti apa itu topologi jaringan secara umum sebagai fondasi pengetahuan.</p>
+      </div>
+
+      <div class="highlight-box reveal">
+        <p><strong>Topologi jaringan komputer</strong> adalah cara atau aturan yang digunakan untuk menghubungkan beberapa komputer dan perangkat lainnya ke dalam sebuah jaringan. Topologi menggambarkan <em>tata letak fisik maupun logis</em> dari perangkat-perangkat yang terhubung, termasuk bagaimana data mengalir di antara mereka.</p>
+      </div>
+
+      <div class="grid-3 reveal">
+        <div class="card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <h3>Topologi Fisik</h3>
+          <p>Menggambarkan penempatan fisik perangkat dan kabel dalam jaringan di dunia nyata.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+          </div>
+          <h3>Topologi Logis</h3>
+          <p>Menggambarkan bagaimana data sebenarnya mengalir antar node terlepas dari susunan fisiknya.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          </div>
+          <h3>Jenis-jenis</h3>
+          <p>Bus, Ring, Star, Mesh, Tree, dan Hybrid adalah topologi yang umum digunakan dalam jaringan.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       02. PENGERTIAN TOPOLOGI STAR
+  ============================================================ -->
+  <section id="pengertian-star" class="section">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-label">02 — Definisi</div>
+        <h2 class="section-title">Apa itu Topologi Star?</h2>
+        <p class="section-intro">Topologi Star merupakan salah satu topologi jaringan yang paling populer dan banyak diterapkan di berbagai lingkungan — dari rumahan hingga perkantoran.</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;">
+        <!-- Teks definisi -->
+        <div class="reveal">
+          <div class="highlight-box">
+            <p><strong>Topologi Star</strong> (bintang) adalah jenis topologi jaringan di mana setiap node (komputer atau perangkat) terhubung secara individual ke sebuah perangkat pusat (biasanya <em>switch</em> atau <em>hub</em>). Seluruh komunikasi antar perangkat harus melewati titik pusat tersebut, sehingga membentuk pola seperti bintang.</p>
+          </div>
+          <p style="margin-top:16px; color: var(--gray-600); font-size: .96rem;">Topologi ini pertama kali diperkenalkan dalam lingkungan jaringan LAN (Local Area Network) dan hingga saat ini menjadi pilihan utama karena kemudahan pengelolaan dan pemeliharaannya.</p>
+        </div>
+
+        <!-- Diagram SVG -->
+        <div class="diagram-wrap reveal">
+          <div class="diagram-title">Diagram Topologi Star</div>
+          <svg class="star-svg" viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram topologi star">
+
+            <!-- Lines from hub to nodes -->
+            <line class="line-conn active" x1="200" y1="180" x2="200" y2="60"/>
+            <line class="line-conn active" x1="200" y1="180" x2="320" y2="110"/>
+            <line class="line-conn active" x1="200" y1="180" x2="340" y2="240"/>
+            <line class="line-conn active" x1="200" y1="180" x2="240" y2="320"/>
+            <line class="line-conn active" x1="200" y1="180" x2="160" y2="320"/>
+            <line class="line-conn active" x1="200" y1="180" x2="60"  y2="240"/>
+            <line class="line-conn active" x1="200" y1="180" x2="80"  y2="110"/>
+
+            <!-- Pulse ring on hub -->
+            <circle class="pulse" cx="200" cy="180" r="26"/>
+
+            <!-- Hub (Switch/Hub) -->
+            <circle class="node-hub" cx="200" cy="180" r="26" filter="url(#hubshadow)"/>
+            <text class="label-hub" x="200" y="184" text-anchor="middle" dominant-baseline="middle">HUB</text>
+
+            <!-- PC nodes -->
+            <!-- Top -->
+            <g transform="translate(200,60)">
+              <rect class="node-pc" x="-22" y="-16" width="44" height="32" rx="5"/>
+              <text class="label" x="0" y="30" text-anchor="middle">PC 1</text>
+            </g>
+            <!-- Top-right -->
+            <g transform="translate(320,110)">
+              <rect class="node-pc" x="-22" y="-16" width="44" height="32" rx="5"/>
+              <text class="label" x="22" y="8" text-anchor="start">PC 2</text>
+            </g>
+            <!-- Bottom-right -->
+            <g transform="translate(340,240)">
+              <rect class="node-pc" x="-22" y="-16" width="44" height="32" rx="5"/>
+              <text class="label" x="22" y="8" text-anchor="start">PC 3</text>
+            </g>
+            <!-- Bottom-right2 -->
+            <g transform="translate(240,320)">
+              <rect class="node-pc" x="-22" y="-16" width="44" height="32" rx="5"/>
+              <text class="label" x="0" y="26" text-anchor="middle">PC 4</text>
+            </g>
+            <!-- Bottom-left -->
+            <g transform="translate(160,320)">
+              <rect class="node-pc" x="-22" y="-16" width="44" height="32" rx="5"/>
+              <text class="label" x="0" y="26" text-anchor="middle">PC 5</text>
+            </g>
+            <!-- Left -->
+            <g transform="translate(60,240)">
+              <rect class="node-pc" x="-22" y="-16" width="44" height="32" rx="5"/>
+              <text class="label" x="-28" y="8" text-anchor="end">PC 6</text>
+            </g>
+            <!-- Top-left -->
+            <g transform="translate(80,110)">
+              <rect class="node-pc" x="-22" y="-16" width="44" height="32" rx="5"/>
+              <text class="label" x="-28" y="8" text-anchor="end">PC 7</text>
+            </g>
+
+            <defs>
+              <filter id="hubshadow" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#1B6CA8" flood-opacity=".45"/>
+              </filter>
+            </defs>
+          </svg>
+          <p class="diagram-caption">Setiap PC terhubung langsung ke Hub/Switch sebagai pusat jaringan</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       03. CARA KERJA
+  ============================================================ -->
+  <section id="cara-kerja" class="section section--alt">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-label">03 — Mekanisme</div>
+        <h2 class="section-title">Cara Kerja Topologi Star</h2>
+        <p class="section-intro">Proses pengiriman data dalam topologi star mengikuti alur yang terstruktur melalui perangkat pusat.</p>
+      </div>
+
+      <div class="steps reveal">
+        <div class="step">
+          <div class="step-left"><div class="step-num">1</div><div class="step-line"></div></div>
+          <div class="step-body">
+            <h3>Perangkat Mengirim Data</h3>
+            <p>Ketika sebuah komputer atau perangkat ingin mengirim data ke perangkat lain, data tersebut terlebih dahulu dikirimkan ke perangkat pusat (hub atau switch) melalui kabel yang menghubungkan keduanya.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-left"><div class="step-num">2</div><div class="step-line"></div></div>
+          <div class="step-body">
+            <h3>Hub/Switch Menerima Data</h3>
+            <p>Perangkat pusat menerima paket data beserta informasi alamat tujuan (MAC Address / IP Address). Hub meneruskan ke semua port, sedangkan switch lebih cerdas — hanya meneruskan ke port yang sesuai.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-left"><div class="step-num">3</div><div class="step-line"></div></div>
+          <div class="step-body">
+            <h3>Data Diteruskan ke Tujuan</h3>
+            <p>Perangkat pusat meneruskan paket data ke perangkat tujuan melalui jalur koneksi yang telah tersedia. Proses ini berlangsung sangat cepat, biasanya hanya dalam hitungan milidetik.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-left"><div class="step-num">4</div><div class="step-line"></div></div>
+          <div class="step-body">
+            <h3>Konfirmasi Penerimaan</h3>
+            <p>Perangkat penerima memproses data yang diterima dan mengirimkan sinyal konfirmasi (ACK) kembali melalui hub/switch kepada pengirim sebagai tanda bahwa data berhasil diterima dengan baik.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-left"><div class="step-num">5</div><div class="step-line"></div></div>
+          <div class="step-body">
+            <h3>Proses Berlanjut</h3>
+            <p>Siklus ini terus berulang untuk setiap paket data yang dikirimkan dalam jaringan. Semua lalu lintas data selalu melewati perangkat pusat, menjadikannya titik kritis dalam jaringan.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       04. KARAKTERISTIK
+  ============================================================ -->
+  <section id="karakteristik" class="section">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-label">04 — Ciri-ciri</div>
+        <h2 class="section-title">Karakteristik Topologi Star</h2>
+        <p class="section-intro">Kenali ciri khas yang membedakan Topologi Star dari topologi jaringan lainnya.</p>
+      </div>
+
+      <div class="pills reveal">
+        <div class="pill"><span class="pill-dot"></span>Menggunakan perangkat pusat (Hub/Switch)</div>
+        <div class="pill"><span class="pill-dot"></span>Setiap node memiliki jalur koneksi independen</div>
+        <div class="pill"><span class="pill-dot"></span>Mudah menambah atau mengurangi perangkat</div>
+        <div class="pill"><span class="pill-dot"></span>Kerusakan satu node tidak mempengaruhi lainnya</div>
+        <div class="pill"><span class="pill-dot"></span>Butuh lebih banyak kabel daripada topologi bus/ring</div>
+        <div class="pill"><span class="pill-dot"></span>Deteksi dan isolasi masalah lebih mudah</div>
+        <div class="pill"><span class="pill-dot"></span>Performa tinggi karena tidak ada tabrakan data</div>
+        <div class="pill"><span class="pill-dot"></span>Umumnya menggunakan kabel UTP/STP Cat5e atau Cat6</div>
+        <div class="pill"><span class="pill-dot"></span>Skala dari jaringan kecil hingga enterprise</div>
+        <div class="pill"><span class="pill-dot"></span>Topologi paling umum di jaringan LAN modern</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       05 & 06. KELEBIHAN & KEKURANGAN
+  ============================================================ -->
+  <section id="kelebihan" class="section section--alt">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-label">05 & 06 — Evaluasi</div>
+        <h2 class="section-title">Kelebihan & Kekurangan</h2>
+        <p class="section-intro">Setiap topologi memiliki sisi positif dan negatif. Memahami keduanya membantu dalam pengambilan keputusan desain jaringan.</p>
+      </div>
+
+      <div class="grid-2 reveal">
+        <!-- KELEBIHAN -->
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:#D1FAE5;display:flex;align-items:center;justify-content:center;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <h3 style="margin:0;color:#059669;">Kelebihan</h3>
+          </div>
+          <ul class="pro-con-list">
+            <li>
+              <span class="icon-pro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span><strong>Mudah dikonfigurasi dan dikelola</strong> — setiap perangkat dapat ditambah atau dihapus tanpa mengganggu jaringan lainnya.</span>
+            </li>
+            <li>
+              <span class="icon-pro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span><strong>Fault tolerance tinggi</strong> — kerusakan satu node tidak menyebabkan seluruh jaringan lumpuh.</span>
+            </li>
+            <li>
+              <span class="icon-pro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span><strong>Deteksi masalah mudah</strong> — isolasi gangguan dapat dilakukan dengan cepat karena setiap jalur bersifat independen.</span>
+            </li>
+            <li>
+              <span class="icon-pro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span><strong>Performa baik</strong> — tidak terjadi tabrakan data (collision) karena menggunakan switch yang mengelola jalur komunikasi.</span>
+            </li>
+            <li>
+              <span class="icon-pro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span><strong>Mudah di-upgrade</strong> — penambahan kapasitas jaringan cukup dengan mengganti switch ke spesifikasi yang lebih tinggi.</span>
+            </li>
+            <li>
+              <span class="icon-pro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span><strong>Keamanan lebih terjaga</strong> — lalu lintas data antar node lebih mudah dipantau dan dikontrol melalui perangkat pusat.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- KEKURANGAN -->
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:#FEE2E2;display:flex;align-items:center;justify-content:center;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </div>
+            <h3 style="margin:0;color:#DC2626;">Kekurangan</h3>
+          </div>
+          <ul class="pro-con-list">
+            <li>
+              <span class="icon-con"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+              <span><strong>Bergantung pada perangkat pusat</strong> — jika hub/switch rusak, seluruh jaringan akan mati total.</span>
+            </li>
+            <li>
+              <span class="icon-con"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+              <span><strong>Biaya kabel lebih tinggi</strong> — setiap perangkat membutuhkan kabel tersendiri ke pusat, sehingga total kabel lebih banyak.</span>
+            </li>
+            <li>
+              <span class="icon-con"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+              <span><strong>Biaya perangkat pusat</strong> — switch berkualitas tinggi membutuhkan investasi yang tidak murah, terutama untuk skala besar.</span>
+            </li>
+            <li>
+              <span class="icon-con"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+              <span><strong>Keterbatasan port</strong> — jumlah perangkat yang dapat terhubung dibatasi oleh jumlah port pada switch/hub.</span>
+            </li>
+            <li>
+              <span class="icon-con"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+              <span><strong>Instalasi lebih kompleks</strong> — penataan kabel dan penempatan perangkat pusat perlu direncanakan dengan baik.</span>
+            </li>
+            <li>
+              <span class="icon-con"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+              <span><strong>Jarak terbatas</strong> — panjang kabel UTP maksimum 100 meter per segmen dari perangkat ke switch.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       07. PERANGKAT
+  ============================================================ -->
+  <section id="perangkat" class="section">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-label">07 — Infrastruktur</div>
+        <h2 class="section-title">Perangkat yang Dibutuhkan</h2>
+        <p class="section-intro">Membangun jaringan Topologi Star memerlukan beberapa komponen utama yang bekerja secara sinergis.</p>
+      </div>
+
+      <div class="table-wrap reveal">
+        <table>
+          <thead>
+            <tr>
+              <th>Perangkat</th>
+              <th>Fungsi</th>
+              <th>Keterangan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Switch / Hub</td>
+              <td>Perangkat pusat yang menghubungkan semua node dalam jaringan</td>
+              <td>Switch lebih direkomendasikan karena lebih cerdas dan efisien daripada hub</td>
+            </tr>
+            <tr>
+              <td>Komputer / Node</td>
+              <td>Perangkat pengguna akhir yang terhubung ke jaringan</td>
+              <td>PC, laptop, printer, server, atau perangkat IoT lainnya</td>
+            </tr>
+            <tr>
+              <td>Kabel UTP / STP</td>
+              <td>Media transmisi data antara node dan switch</td>
+              <td>Umumnya menggunakan Cat5e atau Cat6 untuk kecepatan 100Mbps – 1Gbps</td>
+            </tr>
+            <tr>
+              <td>Konektor RJ-45</td>
+              <td>Penghubung antara kabel UTP dengan port pada perangkat</td>
+              <td>Harus dipasang sesuai standar T568A atau T568B</td>
+            </tr>
+            <tr>
+              <td>NIC (Network Interface Card)</td>
+              <td>Kartu jaringan yang terpasang pada setiap komputer</td>
+              <td>Sudah terintegrasi di sebagian besar komputer modern (onboard)</td>
+            </tr>
+            <tr>
+              <td>Router (opsional)</td>
+              <td>Menghubungkan jaringan lokal ke internet atau jaringan lain</td>
+              <td>Dibutuhkan jika jaringan memerlukan koneksi ke luar LAN</td>
+            </tr>
+            <tr>
+              <td>Access Point (opsional)</td>
+              <td>Menyediakan koneksi nirkabel (Wi-Fi) dalam jaringan star</td>
+              <td>Terhubung ke switch sebagai salah satu node dalam topologi</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       08. MANFAAT
+  ============================================================ -->
+  <section id="manfaat" class="section section--alt">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-label">08 — Kegunaan</div>
+        <h2 class="section-title">Manfaat Topologi Star</h2>
+        <p class="section-intro">Topologi Star memberikan berbagai manfaat nyata yang membuatnya menjadi pilihan utama dalam implementasi jaringan modern.</p>
+      </div>
+
+      <div class="grid-3 reveal">
+        <div class="benefit-card">
+          <span class="benefit-icon">🏫</span>
+          <h3>Lingkungan Pendidikan</h3>
+          <p>Ideal untuk lab komputer sekolah dan kampus karena mudah dikelola guru/teknisi dan perangkat dapat ditambah sesuai kebutuhan.</p>
+        </div>
+        <div class="benefit-card">
+          <span class="benefit-icon">🏢</span>
+          <h3>Jaringan Perkantoran</h3>
+          <p>Memudahkan pengelolaan jaringan kantor skala kecil hingga menengah dengan administrasi terpusat dan keamanan yang baik.</p>
+        </div>
+        <div class="benefit-card">
+          <span class="benefit-icon">🏠</span>
+          <h3>Jaringan Rumahan</h3>
+          <p>Router Wi-Fi modern menerapkan konsep star secara nirkabel, menghubungkan semua perangkat rumah tangga ke internet.</p>
+        </div>
+        <div class="benefit-card">
+          <span class="benefit-icon">🏥</span>
+          <h3>Layanan Kesehatan</h3>
+          <p>Digunakan di rumah sakit dan klinik untuk menghubungkan perangkat medis, komputer administrasi, dan server rekam medis.</p>
+        </div>
+        <div class="benefit-card">
+          <span class="benefit-icon">🏭</span>
+          <h3>Industri & Manufaktur</h3>
+          <p>Mengintegrasikan mesin-mesin produksi, terminal kontrol, dan sistem pengawasan dalam satu jaringan terpusat yang andal.</p>
+        </div>
+        <div class="benefit-card">
+          <span class="benefit-icon">🛡️</span>
+          <h3>Keamanan Jaringan</h3>
+          <p>Memudahkan implementasi firewall dan monitoring karena semua lalu lintas melewati satu titik pusat yang dapat diawasi.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       09. KESIMPULAN
+  ============================================================ -->
+  <section id="kesimpulan" class="section">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-label">09 — Penutup</div>
+        <h2 class="section-title">Kesimpulan</h2>
+      </div>
+      <div class="conclusion reveal">
+        <h2>Topologi Star: Pilihan Cerdas untuk Jaringan Modern</h2>
+        <p style="margin-top:16px; line-height:1.8;">
+          Topologi Star merupakan topologi jaringan yang menempatkan perangkat pusat (switch/hub) sebagai inti dari seluruh koneksi. Setiap node terhubung secara individual ke pusat tersebut, menciptakan jaringan yang terstruktur, mudah dikelola, dan memiliki toleransi kesalahan yang baik.
+        </p>
+        <p style="margin-top:12px; line-height:1.8;">
+          Meskipun memiliki kekurangan seperti ketergantungan pada perangkat pusat dan kebutuhan kabel yang lebih banyak, kelebihan-kelebihannya — mulai dari kemudahan konfigurasi, fault isolation, hingga performa yang baik — menjadikan Topologi Star sebagai pilihan paling populer dan direkomendasikan untuk jaringan LAN di berbagai lingkungan, baik pendidikan, perkantoran, maupun industri.
+        </p>
+        <p style="margin-top:12px; line-height:1.8;">
+          Dengan pemahaman yang baik tentang cara kerja, karakteristik, serta kelebihan dan kekurangannya, Topologi Star dapat diimplementasikan secara optimal untuk memenuhi kebutuhan jaringan yang handal, aman, dan mudah dikembangkan di masa depan.
+        </p>
+        <div style="margin-top:32px; padding-top:24px; border-top: 1px solid rgba(255,255,255,.15); display:flex; align-items:center; gap:14px;">
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#2D8CDB,#4EAFF0);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.95rem;flex-shrink:0;">RA</div>
+          <div>
+            <div style="color:#fff;font-weight:600;font-size:.95rem;">Raditya Andika Paksi</div>
+            <div style="color:rgba(255,255,255,.5);font-size:.82rem;">Penyusun Materi</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <div class="footer-brand">Topologi <span>Star</span> — Jaringan Komputer</div>
+          <div style="color:var(--gray-400);font-size:.82rem;margin-top:4px;">Materi Edukasi Jaringan Komputer</div>
+        </div>
+        <div class="footer-copy">
+          <div style="color:var(--white);font-weight:500;font-size:.88rem;">Raditya Andika Paksi</div>
+          <div>© 2025 Hak Cipta Dilindungi</div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       JAVASCRIPT — Scroll Reveal + Nav Highlight
+  ============================================================ -->
+  <script>
+    // Scroll Reveal
+    (function(){
+      const reveals = document.querySelectorAll('.reveal');
+      const io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if(e.isIntersecting){
+            e.target.classList.add('visible');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin:'0px 0px -40px 0px' });
+      reveals.forEach(function(el){ io.observe(el); });
+    })();
+
+    // Active nav highlight
+    (function(){
+      const sections = document.querySelectorAll('section[id]');
+      const navLinks = document.querySelectorAll('nav a');
+      const io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if(e.isIntersecting){
+            navLinks.forEach(function(a){ a.style.color=''; a.style.borderBottomColor=''; });
+            const id = e.target.getAttribute('id');
+            const active = document.querySelector('nav a[href="#'+id+'"]');
+            if(active){
+              active.style.color = 'var(--blue)';
+              active.style.borderBottomColor = 'var(--blue-light)';
+            }
+          }
+        });
+      }, { threshold: 0.4 });
+      sections.forEach(function(s){ io.observe(s); });
+    })();
+
+    // Smooth scroll polyfill for older browsers
+    document.querySelectorAll('a[href^="#"]').forEach(function(a){
+      a.addEventListener('click', function(e){
+        const target = document.querySelector(this.getAttribute('href'));
+        if(target){
+          e.preventDefault();
+          target.scrollIntoView({ behavior:'smooth', block:'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
